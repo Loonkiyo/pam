@@ -98,23 +98,25 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipScroll}
-        >
-          {CATEGORIAS.map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              onPress={() => setCatAtiva(cat)}
-              style={[styles.chip, catAtiva === cat && styles.chipActive]}
-            >
-              <Text style={[styles.chipText, catAtiva === cat && styles.chipTextActive]}>
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={styles.chipContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipScroll}
+          >
+            {CATEGORIAS.map((cat) => (
+              <TouchableOpacity
+                key={cat}
+                onPress={() => setCatAtiva(cat)}
+                style={[styles.chip, catAtiva === cat && styles.chipActive]}
+              >
+                <Text style={[styles.chipText, catAtiva === cat && styles.chipTextActive]}>
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         <View style={styles.infoBar}>
           <Text style={styles.infoCount}>{filtrados.length} pratos</Text>
@@ -162,7 +164,8 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, color: THEME.textPrimary, fontSize: 14 },
   clearBtn: { color: THEME.textTertiary, fontSize: 14, paddingLeft: 10 },
 
-  chipScroll: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+  chipContainer: { maxHeight: 50, overflow: 'hidden' },
+  chipScroll: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
   chip: {
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8,
     backgroundColor: THEME.surfaceAlt, borderWidth: 1, borderColor: THEME.border,
