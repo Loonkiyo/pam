@@ -18,6 +18,7 @@ function MovieCard({ movie, onToggleFavorite, onPress }) {
     <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
       <View style={styles.cardImageWrap}>
         <Image source={{ uri: movie.image }} style={styles.cardImage} resizeMode="cover" />
+        <View style={styles.cardImageOverlay} />
         <TouchableOpacity style={styles.favBtn} onPress={onToggleFavorite} hitSlop={8}>
           <Text style={styles.favIcon}>♥</Text>
         </TouchableOpacity>
@@ -28,9 +29,8 @@ function MovieCard({ movie, onToggleFavorite, onPress }) {
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle} numberOfLines={1}>{movie.title}</Text>
         <View style={styles.cardMeta}>
-          <View style={[styles.dot, { backgroundColor: movie.color }]} />
           <Text style={styles.cardCat}>{movie.category}</Text>
-          <Text style={styles.cardSep}>·</Text>
+          <Text style={styles.cardDot}>•</Text>
           <Text style={styles.cardYear}>{movie.year}</Text>
         </View>
       </View>
@@ -66,9 +66,14 @@ export default function FavoritesScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.screen}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Meus Favoritos</Text>
-          <Text style={styles.headerCount}>{favoriteMovies.length} filmes</Text>
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.brand}>CINEMAX</Text>
+            <Text style={styles.title}>Meus Favoritos</Text>
+          </View>
+          <View style={styles.countBadge}>
+            <Text style={styles.countText}>{favoriteMovies.length}</Text>
+          </View>
         </View>
 
         <FlatList
@@ -96,44 +101,46 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: THEME.bg },
   screen: { flex: 1, width: '100%', maxWidth: 1120, alignSelf: 'center' },
 
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline',
+  headerRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
     paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12,
   },
-  headerTitle: { color: THEME.textPrimary, fontSize: 24, fontWeight: '800' },
-  headerCount: { color: THEME.textTertiary, fontSize: 13, fontWeight: '600' },
+  brand: { fontSize: 10, fontWeight: '900', color: THEME.accent, letterSpacing: 3 },
+  title: { color: THEME.textPrimary, fontSize: 22, fontWeight: '800', marginTop: 8 },
+  countBadge: {
+    width: 32, height: 32, borderRadius: 16, backgroundColor: THEME.roseSoft,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  countText: { color: THEME.rose, fontSize: 13, fontWeight: '800' },
 
   listContent: { paddingHorizontal: 8, paddingBottom: 32 },
   cardSlot: { flex: 1, marginHorizontal: 8, marginBottom: 16 },
 
   card: {
-    backgroundColor: THEME.surface, borderRadius: 16, overflow: 'hidden',
-    borderWidth: 1.5, borderColor: THEME.border,
-    shadowColor: THEME.accent, shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    backgroundColor: THEME.surface, borderRadius: 12, overflow: 'hidden',
+    borderWidth: 1, borderColor: THEME.border,
   },
   cardImageWrap: { aspectRatio: 16 / 9, backgroundColor: THEME.surfaceAlt },
   cardImage: { width: '100%', height: '100%' },
+  cardImageOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.15)' },
   favBtn: {
     position: 'absolute', top: 8, right: 8,
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    alignItems: 'center', justifyContent: 'center',
+    width: 30, height: 30, borderRadius: 15,
+    backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center',
   },
-  favIcon: { fontSize: 16, color: THEME.rose },
+  favIcon: { fontSize: 14, color: THEME.rose },
   cardRatingBadge: {
     position: 'absolute', bottom: 8, left: 8,
-    backgroundColor: 'rgba(30,27,75,0.82)',
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
   },
-  cardRatingText: { color: '#FBBF24', fontWeight: '700', fontSize: 11 },
+  cardRatingText: { color: THEME.gold, fontWeight: '700', fontSize: 11 },
   cardBody: { padding: 12 },
-  cardTitle: { color: THEME.textPrimary, fontSize: 14, fontWeight: '700' },
-  cardMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 5 },
-  dot: { width: 6, height: 6, borderRadius: 3 },
-  cardCat: { color: THEME.textTertiary, fontSize: 11, fontWeight: '600' },
-  cardSep: { color: THEME.border, fontSize: 11 },
-  cardYear: { color: THEME.textTertiary, fontSize: 11, fontWeight: '500' },
+  cardTitle: { color: THEME.textPrimary, fontSize: 13, fontWeight: '700' },
+  cardMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 4 },
+  cardCat: { color: THEME.accent, fontSize: 10, fontWeight: '700' },
+  cardDot: { color: THEME.textTertiary, fontSize: 8 },
+  cardYear: { color: THEME.textSecondary, fontSize: 10, fontWeight: '500' },
 
   empty: { alignItems: 'center', paddingTop: 60 },
   emptyIcon: { fontSize: 40, marginBottom: 12 },

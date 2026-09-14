@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 import { THEME } from './src/data/theme';
 import { FavoritesProvider, useFavorites } from './src/context/FavoritesContext';
@@ -19,14 +19,16 @@ const Stack = createNativeStackNavigator();
 
 function TabIcon({ label, focused }) {
   const icons = {
-    'Inicio': focused ? '🎬' : '🎥',
-    'Favoritos': focused ? '💜' : '🤍',
-    'Perfil': focused ? '👤' : '👤',
+    'Inicio': focused ? '▶' : '▷',
+    'Favoritos': focused ? '♥' : '♡',
+    'Perfil': focused ? '●' : '○',
   };
   return (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>
-      {icons[label] || '•'}
-    </Text>
+    <View style={[tabStyles.iconWrap, focused && tabStyles.iconWrapActive]}>
+      <Text style={[tabStyles.icon, focused && tabStyles.iconActive]}>
+        {icons[label] || '•'}
+      </Text>
+    </View>
   );
 }
 
@@ -39,16 +41,9 @@ function TabNavigator() {
         headerShown: false,
         tabBarIcon: ({ focused }) => <TabIcon label={route.name} focused={focused} />,
         tabBarActiveTintColor: THEME.accent,
-        tabBarInactiveTintColor: '#A78BFA',
-        tabBarStyle: {
-          backgroundColor: THEME.surface,
-          borderTopColor: THEME.border,
-          borderTopWidth: 1.5,
-          height: 62,
-          paddingBottom: 8,
-          paddingTop: 6,
-        },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarInactiveTintColor: THEME.textTertiary,
+        tabBarStyle: tabStyles.bar,
+        tabBarLabelStyle: tabStyles.label,
       })}
     >
       <Tab.Screen name="Inicio" component={HomeScreen} />
@@ -57,13 +52,34 @@ function TabNavigator() {
         component={FavoritesScreen}
         options={{
           tabBarBadge: favorites.length > 0 ? favorites.length : undefined,
-          tabBarBadgeStyle: { backgroundColor: THEME.rose, color: '#FFF', fontSize: 10, fontWeight: '700' },
+          tabBarBadgeStyle: tabStyles.badge,
         }}
       />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
+
+const tabStyles = StyleSheet.create({
+  bar: {
+    backgroundColor: THEME.surface,
+    borderTopColor: THEME.border,
+    borderTopWidth: 1,
+    height: 60,
+    paddingBottom: 8,
+    paddingTop: 6,
+    elevation: 0,
+  },
+  label: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  iconWrap: {
+    width: 36, height: 28, borderRadius: 8,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  iconWrapActive: { backgroundColor: THEME.accentSoft },
+  icon: { fontSize: 16, color: THEME.textTertiary },
+  iconActive: { color: THEME.accent },
+  badge: { backgroundColor: THEME.rose, color: '#FFF', fontSize: 9, fontWeight: '700' },
+});
 
 export default function App() {
   const [favorites, setFavorites] = useState(['1', '3']);
@@ -77,7 +93,7 @@ export default function App() {
       <FavoritesProvider value={{ favorites, toggleFavorite }}>
         <NavigationContainer
           theme={{
-            dark: false,
+            dark: true,
             colors: {
               primary: THEME.accent,
               background: THEME.bg,
@@ -94,7 +110,7 @@ export default function App() {
             },
           }}
         >
-          <StatusBar style="dark" />
+          <StatusBar style="light" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Tabs" component={TabNavigator} />
             <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
