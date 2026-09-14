@@ -19,7 +19,7 @@ const Stack = createNativeStackNavigator();
 
 function TabIcon({ label, focused }) {
   const icons = {
-    'Inicio': focused ? '▶' : '▷',
+    'Cardápio': focused ? '▶' : '▷',
     'Favoritos': focused ? '♥' : '♡',
     'Perfil': focused ? '●' : '○',
   };
@@ -46,7 +46,7 @@ function TabNavigator() {
         tabBarLabelStyle: tabStyles.label,
       })}
     >
-      <Tab.Screen name="Inicio" component={HomeScreen} />
+      <Tab.Screen name="Cardápio" component={HomeScreen} />
       <Tab.Screen
         name="Favoritos"
         component={FavoritesScreen}

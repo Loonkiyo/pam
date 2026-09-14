@@ -5,33 +5,29 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  Image,
-  useWindowDimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { THEME } from '../data/theme';
-import { MOVIES } from '../data/movies';
+import { PRATOS } from '../data/movies';
 import { useFavorites } from '../context/FavoritesContext';
 
-function MovieCard({ movie, onToggleFavorite, onPress }) {
+function PratoCard({ prato, onToggleFavorito, onPress }) {
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
-      <View style={styles.cardImageWrap}>
-        <Image source={{ uri: movie.image }} style={styles.cardImage} resizeMode="cover" />
-        <View style={styles.cardImageOverlay} />
-        <TouchableOpacity style={styles.favBtn} onPress={onToggleFavorite} hitSlop={8}>
-          <Text style={styles.favIcon}>♥</Text>
-        </TouchableOpacity>
-        <View style={styles.cardRatingBadge}>
-          <Text style={styles.cardRatingText}>★ {movie.rating}</Text>
-        </View>
+      <View style={styles.cardIconWrap}>
+        <Text style={styles.cardIcon}>{prato.icone}</Text>
       </View>
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle} numberOfLines={1}>{movie.title}</Text>
-        <View style={styles.cardMeta}>
-          <Text style={styles.cardCat}>{movie.category}</Text>
-          <Text style={styles.cardDot}>•</Text>
-          <Text style={styles.cardYear}>{movie.year}</Text>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardNome} numberOfLines={1}>{prato.nome}</Text>
+          <TouchableOpacity onPress={onToggleFavorito} hitSlop={8}>
+            <Text style={styles.favIcon}>♥</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.cardDesc} numberOfLines={2}>{prato.desc}</Text>
+        <View style={styles.cardFooter}>
+          <Text style={styles.cardCategoria}>{prato.categoria}</Text>
+          <Text style={styles.cardPreco}>{prato.preco}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -41,23 +37,21 @@ function MovieCard({ movie, onToggleFavorite, onPress }) {
 export default function FavoritesScreen() {
   const { favorites, toggleFavorite } = useFavorites();
   const navigation = useNavigation();
-  const { width } = useWindowDimensions();
-  const columns = width >= 1280 ? 3 : width >= 820 ? 2 : 1;
 
-  const favoriteMovies = useMemo(
-    () => MOVIES.filter((m) => favorites.includes(m.id)),
+  const pratosFavoritos = useMemo(
+    () => PRATOS.filter((p) => favorites.includes(p.id)),
     [favorites]
   );
 
-  const handlePress = useCallback((movie) => {
-    navigation.navigate('MovieDetail', { movieId: movie.id });
+  const handlePress = useCallback((prato) => {
+    navigation.navigate('MovieDetail', { movieId: prato.id });
   }, [navigation]);
 
   const renderCard = useCallback(({ item }) => (
     <View style={styles.cardSlot}>
-      <MovieCard
-        movie={item}
-        onToggleFavorite={() => toggleFavorite(item.id)}
+      <PratoCard
+        prato={item}
+        onToggleFavorito={() => toggleFavorite(item.id)}
         onPress={() => handlePress(item)}
       />
     </View>
@@ -68,27 +62,25 @@ export default function FavoritesScreen() {
       <View style={styles.screen}>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.brand}>CINEMAX</Text>
-            <Text style={styles.title}>Meus Favoritos</Text>
+            <Text style={styles.brand}>BISTRÔ</Text>
+            <Text style={styles.title}>Favoritos</Text>
           </View>
           <View style={styles.countBadge}>
-            <Text style={styles.countText}>{favoriteMovies.length}</Text>
+            <Text style={styles.countText}>{pratosFavoritos.length}</Text>
           </View>
         </View>
 
         <FlatList
-          key={`grid-${columns}`}
-          data={favoriteMovies}
+          data={pratosFavoritos}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
-          numColumns={columns}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>💜</Text>
+              <Text style={styles.emptyIcon}>🍽️</Text>
               <Text style={styles.emptyTitle}>Nenhum favorito ainda</Text>
-              <Text style={styles.emptySub}>Toque no coração nos filmes pra salvar aqui</Text>
+              <Text style={styles.emptySub}>Toque no coração nos pratos pra salvar aqui</Text>
             </View>
           }
         />
@@ -113,34 +105,28 @@ const styles = StyleSheet.create({
   },
   countText: { color: THEME.rose, fontSize: 13, fontWeight: '800' },
 
-  listContent: { paddingHorizontal: 8, paddingBottom: 32 },
-  cardSlot: { flex: 1, marginHorizontal: 8, marginBottom: 16 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 32 },
+  cardSlot: { marginBottom: 12 },
 
   card: {
-    backgroundColor: THEME.surface, borderRadius: 12, overflow: 'hidden',
-    borderWidth: 1, borderColor: THEME.border,
+    flexDirection: 'row', backgroundColor: THEME.surface, borderRadius: 12,
+    borderWidth: 1, borderColor: THEME.border, overflow: 'hidden',
   },
-  cardImageWrap: { aspectRatio: 16 / 9, backgroundColor: THEME.surfaceAlt },
-  cardImage: { width: '100%', height: '100%' },
-  cardImageOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.15)' },
-  favBtn: {
-    position: 'absolute', top: 8, right: 8,
-    width: 30, height: 30, borderRadius: 15,
-    backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center',
+  cardIconWrap: {
+    width: 80, backgroundColor: THEME.surfaceAlt,
+    alignItems: 'center', justifyContent: 'center',
   },
-  favIcon: { fontSize: 14, color: THEME.rose },
-  cardRatingBadge: {
-    position: 'absolute', bottom: 8, left: 8,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
+  cardIcon: { fontSize: 32 },
+  cardBody: { flex: 1, padding: 14 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  cardNome: { color: THEME.textPrimary, fontSize: 15, fontWeight: '700', flex: 1, marginRight: 8 },
+  favIcon: { fontSize: 16, color: THEME.rose },
+  cardDesc: { color: THEME.textSecondary, fontSize: 12, lineHeight: 18, marginTop: 6 },
+  cardFooter: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10,
   },
-  cardRatingText: { color: THEME.gold, fontWeight: '700', fontSize: 11 },
-  cardBody: { padding: 12 },
-  cardTitle: { color: THEME.textPrimary, fontSize: 13, fontWeight: '700' },
-  cardMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 4 },
-  cardCat: { color: THEME.accent, fontSize: 10, fontWeight: '700' },
-  cardDot: { color: THEME.textTertiary, fontSize: 8 },
-  cardYear: { color: THEME.textSecondary, fontSize: 10, fontWeight: '500' },
+  cardCategoria: { color: THEME.accent, fontSize: 11, fontWeight: '700' },
+  cardPreco: { color: THEME.gold, fontSize: 14, fontWeight: '800' },
 
   empty: { alignItems: 'center', paddingTop: 60 },
   emptyIcon: { fontSize: 40, marginBottom: 12 },
